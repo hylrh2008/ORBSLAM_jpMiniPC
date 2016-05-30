@@ -144,6 +144,33 @@ int main(int argc, char **argv)
     if(bReadOK)
     {
         cout<<"load world file successfully."<<endl;
+
+        vector<KeyFrame*> vpAllKFs=World.GetAllKeyFrames();
+        for(vector<KeyFrame*>::iterator vit=vpAllKFs.begin(),vend=vpAllKFs.end();vit!=vend;vit++)
+        {
+            KeyFrame* pKF = *vit;
+            if(!pKF)
+                cout<<"pKF==NULL"<<endl;
+            KeyFrame* pKFpar = pKF->GetParent();
+            set<KeyFrame*> spKFch = pKF->GetChilds();
+            cout<<"pKF-"<<pKF->mnId;
+            if(pKF->mnId!=0)
+                cout<<", parent-"<<pKFpar->mnId;
+            if(spKFch.empty())
+            {
+                cout<<endl;
+                continue;
+            }
+            cout<<", children-";
+            for(set<KeyFrame*>::iterator sit=spKFch.begin(),send=spKFch.end();sit!=send;sit++)
+            {
+                KeyFrame* pKFc = *sit;
+                if(!pKFc)
+                    cout<<"pKFc==NULL"<<endl;
+                cout<<pKFc->mnId<<", ";
+            }
+            cout<<endl;
+        }
     }
     else
     {

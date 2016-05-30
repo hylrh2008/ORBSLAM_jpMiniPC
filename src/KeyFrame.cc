@@ -423,6 +423,9 @@ void KeyFrame::UpdateConnections()
 void KeyFrame::AddChild(KeyFrame *pKF)
 {
     boost::mutex::scoped_lock lockCon(mMutexConnections);
+//    // added 160530
+//    if((void*)this == (void*)pKF || mspChildrens.count(pKF)>0)
+//        return;
     mspChildrens.insert(pKF);
 }
 
@@ -578,7 +581,9 @@ void KeyFrame::SetBadFlag()
                 (*sit)->ChangeParent(mpParent);
             }
 
-        mpParent->EraseChild(this);
+//        // added 160530
+//        if((void*)mpParent!=(void*)this)
+            mpParent->EraseChild(this);
         mbBad = true;
     }
 
