@@ -1494,7 +1494,7 @@ void SaveWorldToFile( Map& World, KeyFrameDatabase& Database)
                     }
                     if(scnt==0)	cerr<<"scnt==0, no good mappoint? shouldn't"<<endl;
                     if(scnt!=pKFi->GetMapPoints().size() || scnt!=nMPcnt)
-                        cerr<<"scnt!=pKFi->GetMapPoints().size(), shouldn't"<<endl;
+                        cerr<<"scnt,pKFi->GetMapPoints.size,nMPcnt = "<<scnt<<","<<pKFi->GetMapPoints().size()<<","<<nMPcnt<<"scnt!=pKFi->GetMapPoints().size(), shouldn't"<<endl;
                 }
                 //2 -------------------------------
 
@@ -1522,7 +1522,22 @@ void SaveWorldToFile( Map& World, KeyFrameDatabase& Database)
                     size_t parentId=0;
                     if(pKFi->mnId!=0)
                         parentId = pKFi->GetParent()->mnId;
+                    // Added by wangjing 160603
+                    else
+                    {
+                        KeyFrame* pKFtmpp = pKFi->GetParent();
+                        if(pKFtmpp)
+                            parentId = pKFtmpp->mnId;
+                    }
                     fkfLPEGs.write(reinterpret_cast<char*>(&parentId), sizeof(size_t));
+
+                    // for test
+                    if(pKFi->mnId==0)
+                        if(pKFi->GetParent())
+                        {
+                            cout<<"parent of KF mnId=0 is not NULL!!!"<<endl;
+                            cout<<"parent Id: "<<pKFi->GetParent()->mnId<<endl;
+                        }
 
                     // children KeyFrames
                     set<KeyFrame*> spChildKFs = pKFi->GetChilds();
@@ -2482,6 +2497,12 @@ bool loadMPKFPointers(MapMPIndexPointer &mpIdxPtMap, MapKFIndexPointer &kfIdxPtM
         ifkfLPEGs.read(reinterpret_cast<char*>(&parentId), sizeof(size_t));
         if(pKF->mnId!=0)
             pKF->ChangeParent(kfIdxPtMap[parentId]);
+        // Added by wangjing 160603
+        else
+        {
+            if(parentId!=0)
+                pKF->ChangeParent(kfIdxPtMap[parentId]);
+        }
 
         // children KeyFrames
         size_t nChild;
